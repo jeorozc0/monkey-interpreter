@@ -75,6 +75,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		if isError(val) {
 			return val
 		}
+		env.Set(node.Name.Value, val)
+	case *ast.Identifier:
+		return evalIdentifier(node, env)
 
 	}
 	return nil
@@ -216,4 +219,12 @@ func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) obje
 		}
 	}
 	return result
+}
+
+func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
+	val, ok := env.Get(node.Value)
+	if !ok {
+		return newError("identifier not found: " + node.Value)
+	}
+	return val
 }
